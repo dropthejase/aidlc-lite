@@ -121,9 +121,6 @@ _logf = None
 
 
 def emit(line=""):
-    """Print a line live and append it to the run log (if one is open). Used raw
-    for the script's own orchestration lines (round banners, progress)."""
-    print(line, flush=True)
     if _logf is not None:
         with _logf.open("a") as f:
             f.write(line + "\n")
@@ -321,7 +318,7 @@ def main():
     try:
         outcome = asyncio.run(loop(unit, root, args.max_rounds, extra_dirs))
     except KeyboardInterrupt:
-        print("\n⏹ Stopped by user (Ctrl+C).")
+        emit("\n⏹ Stopped by user (Ctrl+C).")
         sys.exit(130)
     sys.exit(0 if outcome == "complete" else 2)
 

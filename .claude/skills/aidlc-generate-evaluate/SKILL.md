@@ -59,7 +59,7 @@ python3 -m venv .aidlc/.venv
 **To build independent units in parallel**, run one invocation per unit concurrently (each in its own worktree, e.g. in the background). Runs share no state — separate unit folders, convo files, worktrees.
 
 While it runs:
-- **Watch it live** — the script streams each agent's reasoning and tool calls to stdout, prefixed `[gen]`/`[eval]`. The full trace is also saved to `.run-logs/<unit>-{timestamp}.log` (paired to the convo by timestamp); `tail -f` it to follow a backgrounded run.
+- **Watch it live** — the full trace is saved to `.run-logs/<unit>-{timestamp}.log` (paired to the convo by timestamp); `tail -f` it to follow the run.
 - **Steer** without restarting — write to `.aidlc/<unit>/steer.md`; the next round applies it once, then clears it.
 - **Stop** with `Ctrl+C`. The script also stops at `--max-rounds` (default 8).
 
