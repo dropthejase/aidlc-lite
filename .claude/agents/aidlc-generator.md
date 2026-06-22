@@ -1,6 +1,6 @@
 ---
 name: aidlc-generator
-description: Implements specified tasks from a unit's plan as production-grade, tested code. Use to execute one or more planned tasks.
+description: Implements specified tasks from a unit's plan as production-grade, tested code. Use to execute one or more planned tasks. **Only invoke via the `aidlc-generate-evaluate skill` and `generate_evaluate.py`**.
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: sonnet
 ---
