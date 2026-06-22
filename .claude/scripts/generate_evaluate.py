@@ -172,6 +172,7 @@ async def run_agent(prompt, system, cwd, session_id, resume, label,
     run live (and tell the two agents apart in a parallel run).
     """
     opts = ClaudeAgentOptions(
+        model="sonnet",
         cwd=str(cwd),
         add_dirs=[str(d) for d in (add_dirs or [])],
         system_prompt=system,

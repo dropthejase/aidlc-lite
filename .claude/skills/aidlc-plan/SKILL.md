@@ -158,7 +158,7 @@ Planning is done. Report what now exists (living docs updated, units planned und
 
 > Planning complete. Ready to start building? Run `aidlc-generate-evaluate` to start building!
 
-**DO NOT START BUILDING AUTOMATICALLY.** On the user's go-ahead, hand off to `aidlc-generate-evaluate` for the first unit.
+**DO NOT START BUILDING AUTOMATICALLY. DO NOT dispatch the generator or evaluator agents yourself.** Tell the user to run the `aidlc-generate-evaluate` skill — that skill is the conductor that sets up worktrees, runs the build loop, and owns all gates. Your job ends here.
 
 ## Best Practices
 - Plan, don't build — this skill writes specs and plans, never application code.
