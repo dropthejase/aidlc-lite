@@ -16,23 +16,11 @@ If your context window is fresh, read `.claude/references/common/prerequisites.m
 Send the following first to the user:
 
 ```
-   █████╗ ██╗      ██████╗ ██╗      ██████╗
-  ██╔══██╗██║      ██╔══██╗██║     ██╔════╝
-  ███████║██║█████╗██║  ██║██║     ██║
-  ██╔══██║██║╚════╝██║  ██║██║     ██║
-  ██║  ██║██║      ██████╔╝███████╗╚██████╗
-  ╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝ ╚═════╝
+-------------------------------------------------------
+**AI-DLC · DISCOVER — let's onboard onto this codebase!**
+-------------------------------------------------------
 
-  AI-Driven Lifecycle Development
-
-  ════════════════════════════════════════════════════════════════════
-   DISCOVER — let's onboard onto this codebase.
-
-   We'll fan out read-only crawlers across the code, consolidate what
-   they find, and reverse-engineer it into the living docs — what's
-   built, how it fits together, and what's still unclear. No changes
-   to your code.
-  ════════════════════════════════════════════════════════════════════
+We'll fan out read-only crawlers across the code, consolidate what they find, and reverse-engineer it into the living docs — what's built, how it fits together, and what's still unclear. No changes to your code.
 ```
 
 ## Steps

@@ -16,22 +16,11 @@ If your context window is fresh, read `.claude/references/common/prerequisites.m
 Send the following first to the user:
 
 ```
-   █████╗ ██╗      ██████╗ ██╗      ██████╗
-  ██╔══██╗██║      ██╔══██╗██║     ██╔════╝
-  ███████║██║█████╗██║  ██║██║     ██║
-  ██╔══██║██║╚════╝██║  ██║██║     ██║
-  ██║  ██║██║      ██████╔╝███████╗╚██████╗
-  ╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝ ╚═════╝
+-------------------------------------------------------
+**AI-DLC · PLAN — let's turn your idea into a buildable plan.**
+-------------------------------------------------------
 
-  AI-Driven Lifecycle Development
-
-  ════════════════════════════════════════════════════════════════════
-   PLAN — let's turn your idea into a buildable plan.
-
-   We'll talk through what you're building and agree an architecture,
-   break it into units, then write a spec, design, and tasks for each.
-   No code yet — that comes next. You approve at every gate.
-  ════════════════════════════════════════════════════════════════════
+We'll talk through what you're building, agree an architecture, break it into units, then write a spec, design, and tasks for each. No code yet — that comes next. You approve at every gate.
 ```
 
 ## Steps
