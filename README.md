@@ -22,6 +22,10 @@ That gives your repo a `.claude/` (the framework) and a root `CLAUDE.md` (which 
 
 > If your project already has a `CLAUDE.md`, merge the two rather than overwrite — AIDLC-Lite's `CLAUDE.md` is mostly a routing table and a few principles.
 
+## CLAUDE.md reminder hook
+
+`.claude/settings.json` includes a `UserPromptSubmit` hook that randomly injects the full contents of `CLAUDE.md` into Claude's context (~20% of turns). This counteracts context-window drift in long sessions where Claude may start ignoring the project rules. No state file — it fires probabilistically on each user message.
+
 ## How it works
 
 AIDLC-Lite splits development into a few **skills**, each a clear stage with user gates. State lives on disk — there is no hidden state file:
