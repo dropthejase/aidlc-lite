@@ -1,0 +1,16 @@
+.DS_Store
+
+# Build-loop run logs (full stdout traces, paired to convo-{ts}.md by timestamp)
+.run-logs/
+
+# Per-unit working state (plans, convos, bugs) — regenerated per project.
+# Keep the folder (so it exists on clone) but ignore its contents.
+.aidlc/*
+!.aidlc/.gitkeep
+
+# Dump
+.dump/
+
+# Python venv used by the build loop
+.venv/
+**/__pycache__/
