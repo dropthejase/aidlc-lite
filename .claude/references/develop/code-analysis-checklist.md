@@ -24,6 +24,7 @@ Used by the reviewer to assess generated or modified code.
 - [ ] One primary export per file
 - [ ] Organised by feature not layer
 - [ ] No duplicate logic, no circular dependencies
+- [ ] Follows YAGNI — no speculative code, abstractions, or flags beyond what the task requires
 
 ## Error Handling
 

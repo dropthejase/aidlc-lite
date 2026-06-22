@@ -1,5 +1,13 @@
 # Code Generation Patterns
 
+## Scope Discipline
+
+### YAGNI (You Aren't Gonna Need It)
+Only build what the current task requires. Do not add parameters, abstractions, config flags, or extension points for hypothetical future needs — they add complexity now and are often wrong about what the future actually needs.
+
+### DRY (Don't Repeat Yourself)
+Every piece of knowledge has one authoritative place. Duplication means two places to update when something changes, and they will eventually diverge. Extract shared logic when the same concept appears in two or more places — but only once the duplication is real, not anticipated (see YAGNI).
+
 ## Clean Code Principles
 
 ### Naming
