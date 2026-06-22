@@ -18,6 +18,7 @@ This project uses AI-DLC to drive the development of production grade systems.
 ## When To Run AI-DLC Skills
 
 **On every user turn, consider whether to run AI-DLC skills**
+
 **Prompt the user to consider one or more of the following skills**
 
 | Situation | Skill |
