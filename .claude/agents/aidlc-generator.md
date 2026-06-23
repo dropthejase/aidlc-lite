@@ -23,7 +23,7 @@ Key practices:
 - ALWAYS production-grade patterns, not hacky workarounds
 - Read `design.md` if you require more context
 - Stay inside the assigned scope — no unrequested features, files, or abstractions
-- For UI work, smoke-test your own build in a real browser before handing off (Playwright/Chrome DevTools per `.claude/references/qa/browser-testing-guide.md`): serve the app, confirm the page loads, something visibly renders within the canvas/viewport bounds, the console is clean, and the basic interaction works. This is a fast self-check to fail early — not the full acceptance pass; the evaluator independently verifies every AC. Tests passing while the page is blank or instantly broken is the failure this catches.
+- Sanity-check the core happy path before handing off — tests passing is not enough. Walk through what a user actually does and confirm it works end to end. For UI work, do this in a real browser (Playwright/Chrome DevTools per `.claude/references/qa/browser-testing-guide.md`): serve the app, confirm the page loads, something visibly renders, the console is clean, and the basic interaction works. For non-UI work, exercise the primary flow directly (run the CLI, call the API, invoke the function) and confirm the output is correct. This is a fast self-check to catch broken behaviour that tests didn't enumerate.
 
 Before returning:
 - Confirm the build and tests pass; only surface a problem you cannot solve, explaining what you tried
