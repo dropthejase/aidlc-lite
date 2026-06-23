@@ -201,11 +201,11 @@ async def run_agent(prompt, system, cwd, session_id, resume, label,
 
 
 def metaline(agent, rnd, meta):
-    """A one-line HTML-comment footer the script appends to convo per agent pass."""
-    return (
-        f"<!-- {agent} · round {rnd} · {meta.get('secs', 0):.1f}s · "
+    """Emit a cost/token summary line to the run log (not the convo)."""
+    emit(
+        f"  [{agent}] round {rnd} · {meta.get('secs', 0):.1f}s · "
         f"{meta.get('in', 0)} in / {meta.get('out', 0)} out tok · "
-        f"${meta.get('cost', 0):.4f} -->\n"
+        f"${meta.get('cost', 0):.4f}"
     )
 
 
@@ -264,8 +264,7 @@ async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
             # discovering it broken a round later.
             extra_tools=["mcp__playwright__*", "mcp__chrome-devtools__*"],
         )
-        with convo.open("a") as f:
-            f.write(metaline("generator", rnd, gen_meta))
+        metaline("generator", rnd, gen_meta)
         emit("  generator: done")
 
         _, eval_meta = await run_agent(
@@ -288,8 +287,7 @@ async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
             extra_tools=[done_tool],
             mcp={"unit": done_server},
         )
-        with convo.open("a") as f:
-            f.write(metaline("evaluator", rnd, eval_meta))
+        metaline("evaluator", rnd, eval_meta)
         emit("  evaluator: done")
 
         if _state["done"]:
