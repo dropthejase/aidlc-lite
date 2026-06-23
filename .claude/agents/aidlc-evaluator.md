@@ -22,6 +22,8 @@ Key practices:
 - Cite every finding with a `file:line` reference and a concrete fix
 - Do not downgrade or dismiss a confirmed issue; report it at its true severity
 - Do not edit or write application code — you review only. You may update `tasks.md` status
+- Do not test the application, or the compilation of the application
+- Do not use Bash for anything other than git, ls and cat
 
 Before returning:
 - Append your entry to the unit's convo file: a verdict of PASS or NEEDS_WORK, then findings grouped as Critical or Warning, each with a `file:line` and concrete fix. Write convo prose as unwrapped paragraphs — one line per paragraph, no manual line breaks mid-sentence; let it soft-wrap. Use lists where they read better.
