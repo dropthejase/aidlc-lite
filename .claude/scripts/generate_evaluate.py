@@ -160,7 +160,8 @@ def _trace(label, message):
 
 
 async def run_agent(prompt, system, cwd, session_id, resume, label,
-                    add_dirs=None, extra_tools=None, mcp=None):
+                    model="sonnet", base_tools=None, add_dirs=None,
+                    extra_tools=None, mcp=None):
     """Run one agent pass; return (final text, metadata dict).
 
     Session continuity: round 1 sets `session_id` (our own id) so the agent's
@@ -171,12 +172,14 @@ async def run_agent(prompt, system, cwd, session_id, resume, label,
     `label` ("gen"/"eval") tags every streamed line so a watcher can follow the
     run live (and tell the two agents apart in a parallel run).
     """
+    if base_tools is None:
+        base_tools = ["Read", "Grep", "Glob", "Write", "Edit", "Bash"]
     opts = ClaudeAgentOptions(
-        model="sonnet",
+        model=model,
         cwd=str(cwd),
         add_dirs=[str(d) for d in (add_dirs or [])],
         system_prompt=system,
-        allowed_tools=["Read", "Grep", "Glob", "Write", "Edit", "Bash"] + (extra_tools or []),
+        allowed_tools=base_tools + (extra_tools or []),
         permission_mode="acceptEdits",
         mcp_servers=mcp or {},
         session_id=None if resume else session_id,
@@ -254,11 +257,11 @@ async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
             session_id=gen_sid,
             resume=resume,
             label="gen",
+            model="sonnet",
             add_dirs=extra_dirs,
             # Browser tools so the generator can smoke-test its own UI work before
             # handoff (page loads, renders, console clean) — fail fast instead of
-            # discovering it broken a round later. The evaluator still does the
-            # authoritative AC verification independently.
+            # discovering it broken a round later.
             extra_tools=["mcp__playwright__*", "mcp__chrome-devtools__*"],
         )
         with convo.open("a") as f:
@@ -268,8 +271,8 @@ async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
         _, eval_meta = await run_agent(
             prompt=(
                 f"Review unit '{unit.name}'. Plan and log in {unit}/ "
-                f"(spec.md, tasks.md, {convo.name}). Re-run the build and tests yourself, "
-                f"review the diff, and append your verdict and findings to {convo.name}. "
+                f"(spec.md, tasks.md, {convo.name}). Review the diff against the spec "
+                f"and append your verdict and findings to {convo.name}. "
                 f"If — and only if — every task passes and all acceptance criteria in "
                 f"spec.md pass, append a final '<DONE>' line to {convo.name} and call the "
                 f"mark_unit_complete tool."
@@ -279,11 +282,10 @@ async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
             session_id=eval_sid,
             resume=resume,
             label="eval",
+            model="haiku",
+            base_tools=["Read", "Grep", "Glob", "Bash"],
             add_dirs=extra_dirs,
-            # done_tool: the unit-complete signal. The browser tools let the evaluator
-            # verify UI in a real browser — their servers load from the project .mcp.json
-            # (default project setting source); here we only allow the tools.
-            extra_tools=[done_tool, "mcp__playwright__*", "mcp__chrome-devtools__*"],
+            extra_tools=[done_tool],
             mcp={"unit": done_server},
         )
         with convo.open("a") as f:
