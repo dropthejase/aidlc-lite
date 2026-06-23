@@ -209,7 +209,7 @@ def metaline(agent, rnd, meta):
     )
 
 
-async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
+async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs, app_dir=None):
     global _logf
     ts = datetime.now()
     convo = unit / f"convo-{ts:%Y%m%d-%H%M%S}.md"
@@ -267,11 +267,15 @@ async def loop(unit: Path, root: Path, max_rounds: int, extra_dirs):
         metaline("generator", rnd, gen_meta)
         emit("  generator: done")
 
+        app_dir_note = (
+            f" The implementation is in {app_dir} — run git diff and read files there."
+            if app_dir else ""
+        )
         _, eval_meta = await run_agent(
             prompt=(
                 f"Review unit '{unit.name}'. Plan and log in {unit}/ "
                 f"(spec.md, tasks.md, {convo.name}). Review the diff against the spec "
-                f"and append your verdict and findings to {convo.name}. "
+                f"and append your verdict and findings to {convo.name}.{app_dir_note} "
                 f"If — and only if — every task passes and all acceptance criteria in "
                 f"spec.md pass, append a final '<DONE>' line to {convo.name} and call the "
                 f"mark_unit_complete tool."
@@ -313,11 +317,13 @@ def main():
 
     # Grant agents access to dirs outside root (the unit folder, and an app dir if separate).
     extra_dirs = [unit]
+    app_dir = None
     if args.app_dir:
-        extra_dirs.append(Path(args.app_dir).resolve())
+        app_dir = Path(args.app_dir).resolve()
+        extra_dirs.append(app_dir)
 
     try:
-        outcome = asyncio.run(loop(unit, root, args.max_rounds, extra_dirs))
+        outcome = asyncio.run(loop(unit, root, args.max_rounds, extra_dirs, app_dir))
     except KeyboardInterrupt:
         emit("\n⏹ Stopped by user (Ctrl+C).")
         sys.exit(130)
