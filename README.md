@@ -9,15 +9,14 @@ A lightweight, AI-Driven Development Lifecycle for [Claude Code](https://claude.
 
 ## Install
 
-Copy the framework into the root of your project (the directory Claude Code opens):
+Clone this repo, then copy the `framework/` directory into the root of your project:
 
 ```bash
-# from your project root
 git clone https://github.com/<you>/aidlc-lite /tmp/aidlc-lite
-cp -R /tmp/aidlc-lite/.claude /tmp/aidlc-lite/CLAUDE.md .
+cp -R /tmp/aidlc-lite/framework/. /path/to/your-project/
 ```
 
-That gives your repo a `.claude/` (the framework) and a root `CLAUDE.md` (which tells Claude when to reach for each skill). Open the project in Claude Code and start with `/aidlc-init`.
+That gives your project a `.claude/` (the framework) and a root `CLAUDE.md` (which tells Claude when to reach for each skill). Open the project in Claude Code and start with `/aidlc-init`.
 
 > If your project already has a `CLAUDE.md`, merge the two rather than overwrite — AIDLC-Lite's `CLAUDE.md` is mostly a routing table and a few principles.
 
@@ -53,31 +52,38 @@ Living docs are only ever updated through a skill, at a user-confirmed gate — 
 
 ## Repo structure
 
-```
+```text
 .
-├── CLAUDE.md                        # Skill routing table + core principles (committed; copy to your project)
-├── .claude/
-│   ├── skills/                      # One subdirectory per skill — Claude loads on demand
-│   │   ├── aidlc-init/SKILL.md
-│   │   ├── aidlc-plan/SKILL.md
-│   │   ├── aidlc-discover/SKILL.md
-│   │   ├── aidlc-generate-evaluate/SKILL.md
-│   │   ├── aidlc-feature/SKILL.md
-│   │   └── aidlc-fix/SKILL.md
-│   ├── agents/                      # Reusable agents called by skills
-│   │   ├── aidlc-evaluator.md       # Reviews against spec, quality, security; returns PASS/NEEDS_WORK
-│   │   └── aidlc-crawler.md         # Read-only codebase scanner (used by aidlc-discover)
-│   ├── hooks/                       # Shell hooks wired into Claude Code lifecycle events
-│   │   ├── subagent-start-log.sh    # Logs subagent start to .run-logs/subagent-debug.log
-│   │   └── subagent-stop-log.sh     # Logs subagent stop + tool calls from its transcript
-│   ├── references/                  # Knowledge guides loaded into context by skills as needed
-│   │   ├── common/                  # Cross-cutting guides (prerequisites, quality standards…)
-│   │   ├── requirements/            # Requirements engineering, product thinking
-│   │   ├── design/                  # Architecture patterns, DDD, functional design, UX
-│   │   ├── develop/                 # Code generation, testing guides
-│   │   ├── qa/                      # Quality and security review guides
-│   │   └── templates/               # Canonical templates for living docs and unit plans
-│   └── settings.json                # Hook configuration
+└── framework/                       # Everything to copy into your project
+    ├── CLAUDE.md                    # Skill routing table + core principles
+    └── .claude/
+        ├── skills/                      # One subdirectory per skill — Claude loads on demand
+        │   ├── aidlc-init/SKILL.md
+        │   ├── aidlc-plan/SKILL.md
+        │   ├── aidlc-discover/SKILL.md
+        │   ├── aidlc-generate-evaluate/SKILL.md
+        │   ├── aidlc-feature/SKILL.md
+        │   └── aidlc-fix/SKILL.md
+        ├── agents/                      # Reusable agents called by skills
+        │   ├── aidlc-evaluator.md       # Reviews against spec, quality, security; returns PASS/NEEDS_WORK
+        │   └── aidlc-crawler.md         # Read-only codebase scanner (used by aidlc-discover)
+        ├── hooks/                       # Shell hooks wired into Claude Code lifecycle events
+        │   ├── subagent-start-log.sh    # Logs subagent start to .run-logs/subagent-debug.log
+        │   └── subagent-stop-log.sh     # Logs subagent stop + tool calls from its transcript
+        ├── references/                  # Knowledge guides loaded into context by skills as needed
+        │   ├── common/                  # Cross-cutting guides (prerequisites, quality standards…)
+        │   ├── requirements/            # Requirements engineering, product thinking
+        │   ├── design/                  # Architecture patterns, DDD, functional design, UX
+        │   ├── develop/                 # Code generation, testing guides
+        │   ├── qa/                      # Quality and security review guides
+        │   └── templates/               # Canonical templates for living docs and unit plans
+        └── settings.json                # Hook configuration
+```
+
+Once installed, `aidlc-init` creates these in your project:
+
+```text
+your-project/
 ├── docs/                            # Living docs (committed; populated by aidlc-init / aidlc-plan)
 │   ├── architecture.md
 │   ├── code-structure.md
