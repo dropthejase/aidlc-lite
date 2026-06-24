@@ -1,6 +1,6 @@
 ---
 name: aidlc-evaluator
-description: Skeptical second-opinion reviewer that evaluates implemented code against its specification, returning a pass/fail verdict. **Only invoke via the `aidlc-generate-evaluate skill` and `generate_evaluate.py`**.
+description: Skeptical second-opinion reviewer that evaluates implemented code against its specification, returning a pass/fail verdict. ONLY use during the aidlc-generate-evaluate skill.
 tools: Read, Grep, Glob, Bash
 model: haiku
 ---
