@@ -37,7 +37,7 @@ For each unit, read `spec.md`, `design.md`, and `tasks.md`. Announce a one-line 
 Each unit builds in its own git worktree so parallel runs don't collide.
 
 - **Detect existing isolation** first: if you're already in a dedicated worktree for that unit, reuse it. Never nest a worktree in a worktree.
-- Otherwise propose a branch `feature/<unit>` (let the user rename) and **ask consent** to create a worktree off the current integration branch. Prefer the harness's native worktree tool (`EnterWorktree`); fall back to `git worktree add -b feature/<unit> <path>`.
+- Otherwise propose a branch `feature/<unit>` (let the user rename) and **ask consent** to create a worktree off the current integration branch. Prefer the harness's native worktree tool (`EnterWorktree`); fall back to `git worktree add -b feature/<unit> ../<repo>-<unit>` (sibling directory).
 - If the user declines isolation, work in place on a `feature/<unit>` branch — never on the integration branch directly.
 
 ### Step 3: Build-evaluate loop
@@ -75,12 +75,19 @@ Commit on the feature branch with a focused message. Then append a round entry t
 Spawn the `aidlc-evaluator` subagent with the following prompt:
 
 ```
-Review unit(s) '<unit>'.
+Review unit '<unit>'.
 - Plan files: .aidlc/<unit>/spec.md, tasks.md, convo-{timestamp}.md
 - The implementation is on branch feature/<unit> in worktree <path>
 - Run `git diff $(git merge-base HEAD <integration-branch>) HEAD` to see what was built
-- Append your verdict and findings to convo-{timestamp}.md
-- If every task passes AND every acceptance criterion in spec.md passes, append a final `<DONE>` line to convo-{timestamp}.md
+- Append your verdict to convo-{timestamp}.md using this exact heading format:
+
+## Round N — Evaluator — [YYYY-MM-DD HH:MM]
+**Verdict:** PASS | NEEDS_WORK
+**Findings:**
+- [Critical] `file:line` — what's wrong; concrete fix.
+- [Warning] `file:line` — what's wrong; concrete fix.
+
+- If every task passes AND every acceptance criterion in spec.md passes, append a final `<DONE>` line after your entry
 ```
 
 Wait for the subagent to finish, then read its verdict from `convo-{timestamp}.md`.
