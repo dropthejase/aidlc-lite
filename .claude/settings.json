@@ -10,6 +10,28 @@
           }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git -C \"${PWD}\" rev-parse --show-toplevel)/.claude/hooks/subagent-start-log.sh\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git -C \"${PWD}\" rev-parse --show-toplevel)/.claude/hooks/subagent-stop-log.sh\""
+          }
+        ]
+      }
     ]
   }
 }
