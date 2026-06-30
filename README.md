@@ -9,16 +9,15 @@ A lightweight, AI-Driven Development Lifecycle for [Claude Code](https://claude.
 
 ## Install
 
-Clone this repo, then copy the `framework/` directory into the root of your project:
+Clone this repo anywhere, then run the interactive setup script:
 
 ```bash
 git clone https://github.com/<you>/aidlc-lite /tmp/aidlc-lite
-cp -R /tmp/aidlc-lite/framework/. /path/to/your-project/
+cd /tmp/aidlc-lite
+./setup.sh
 ```
 
-That gives your project a `.claude/` (the framework) and a root `CLAUDE.md` (which tells Claude when to reach for each skill). Open the project in Claude Code and start with `/aidlc-init`.
-
-> If your project already has a `CLAUDE.md`, merge the two rather than overwrite — AIDLC-Lite's `CLAUDE.md` is mostly a routing table and a few principles.
+The script asks which coding agent you use, prompts for your project's absolute path, backs up any existing `.claude/` or `CLAUDE.md`, and installs the framework. Once done, open your project in Claude Code and run `/aidlc-init`.
 
 ## CLAUDE.md reminder hook
 
