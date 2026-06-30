@@ -1,0 +1,37 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ $(( RANDOM % 5 )) -eq 0 ] && echo '[REMINDER] CLAUDE.md rules:' && cat \"$(git -C \"${PWD}\" rev-parse --show-toplevel)/CLAUDE.md\" || true"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git -C \"${PWD}\" rev-parse --show-toplevel)/.claude/hooks/subagent-start-log.sh\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git -C \"${PWD}\" rev-parse --show-toplevel)/.claude/hooks/subagent-stop-log.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

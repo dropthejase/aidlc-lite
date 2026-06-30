@@ -5,22 +5,19 @@ A lightweight, AI-Driven Development Lifecycle for [Claude Code](https://claude.
 ## Requirements
 
 - [Claude Code](https://claude.com/claude-code)
-- Python 3 (for the build loop; it installs `claude-agent-sdk` into a local venv and reuses your Claude Code login — no API key needed)
-- A git repository (the build loop uses worktrees)
+- A git repository (the build loop uses worktrees for isolation)
 
 ## Install
 
-Copy the framework into the root of your project (the directory Claude Code opens):
+Clone this repo anywhere, then run the interactive setup script:
 
 ```bash
-# from your project root
 git clone https://github.com/<you>/aidlc-lite /tmp/aidlc-lite
-cp -R /tmp/aidlc-lite/.claude /tmp/aidlc-lite/CLAUDE.md .
+cd /tmp/aidlc-lite
+./setup.sh
 ```
 
-That gives your repo a `.claude/` (the framework) and a root `CLAUDE.md` (which tells Claude when to reach for each skill). Open the project in Claude Code and start with `/aidlc-init`.
-
-> If your project already has a `CLAUDE.md`, merge the two rather than overwrite — AIDLC-Lite's `CLAUDE.md` is mostly a routing table and a few principles.
+The script asks which coding agent you use, prompts for your project's absolute path, backs up any existing `.claude/` or `CLAUDE.md`, and installs the framework. Once done, open your project in Claude Code and run `/aidlc-init`.
 
 ## CLAUDE.md reminder hook
 
@@ -35,15 +32,15 @@ AIDLC-Lite splits development into a few **skills**, each a clear stage with use
 | Set up a repo for AIDLC | `/aidlc-init` | Scaffolds `docs/` (living docs) and `.aidlc/` (working state). |
 | Plan a greenfield idea | `/aidlc-plan` | Clarifies intent, agrees an architecture, decomposes into **units**, writes each unit's spec/design/tasks. Stops at planning. |
 | Reverse-engineer an existing codebase | `/aidlc-discover` | Dispatches read-only crawler agents in parallel, consolidates into the living docs. |
-| Build a planned unit | `/aidlc-generate-evaluate` | Runs a **generator ⇄ evaluator** loop in an isolated git worktree until every task and acceptance criterion passes, then merges. |
+| Build a planned unit | `/aidlc-generate-evaluate` | You are the coordinator: build code directly (or via subagents), then spawn an evaluator subagent each round to independently review against the spec. Loop until every task and AC passes, then merge. |
 | Add a capability to a built unit | `/aidlc-feature` | Amends an existing unit's spec/design/tasks with a new epic, then hands off to the build loop. |
 | Fix a bug | `/aidlc-fix` | Finds and proves the root cause before changing code; gates the fix. |
 
 ### Two ideas do most of the work
 
-**Units.** A *unit* is the smallest slice you can build and verify on its own. Each gets its own plan (`spec.md`, `design.md`, `tasks.md`) under `.aidlc/<unit>/`. Independent units build concurrently, each in its own git worktree.
+**Units.** A *unit* is the smallest slice you can build and verify on its own. Each gets its own plan (`spec.md`, `design.md`, `tasks.md`) under `.aidlc/<unit>/`. Independent units can build concurrently, each in its own git worktree.
 
-**Generator ⇄ evaluator.** Building a unit is a loop driven by `.claude/scripts/generate_evaluate.py`. A **generator** writes code; an independent **evaluator** re-runs the tests, reviews against spec/quality/security, and sanity-checks the result actually works. The loop continues — findings from one round become the next round's instructions — until the evaluator declares the unit done or a round cap stops it. The loop, and every exit, lives in the script, so a runaway is impossible. This is based on Anthropic's [*Building agents with the Claude Agent SDK / harness design for long-running agents*](https://www.anthropic.com/engineering/harness-design-long-running-apps) post.
+**Coordinator ⇄ evaluator.** Building a unit is a loop the coordinator (Claude, in your session) drives directly. The coordinator writes code — or delegates to builder subagents for sufficiently independent tasks — then spawns an independent **evaluator** subagent each round to review against the spec, quality, and security standards. Findings from one round become the next round's instructions. The loop continues until the evaluator passes every task and acceptance criterion, or a round cap stops it. Because the coordinator owns all control flow, runaway builds are impossible. This pattern is inspired by Anthropic's [*Building agents with the Claude Agent SDK / harness design for long-running agents*](https://www.anthropic.com/engineering/harness-design-long-running-apps) post.
 
 ### Living docs vs. plan artifacts
 
@@ -54,30 +51,38 @@ Living docs are only ever updated through a skill, at a user-confirmed gate — 
 
 ## Repo structure
 
-```
+```text
 .
-├── CLAUDE.md                        # Skill routing table + core principles (committed; copy to your project)
-├── .claude/
-│   ├── skills/                      # One subdirectory per skill — Claude loads on demand
-│   │   ├── aidlc-init/SKILL.md
-│   │   ├── aidlc-plan/SKILL.md
-│   │   ├── aidlc-discover/SKILL.md
-│   │   ├── aidlc-generate-evaluate/SKILL.md
-│   │   ├── aidlc-feature/SKILL.md
-│   │   └── aidlc-fix/SKILL.md
-│   ├── agents/                      # Reusable agents called by the build loop
-│   │   ├── aidlc-generator.md       # Implements tasks; writes production code
-│   │   ├── aidlc-evaluator.md       # Reviews against spec, quality, security; returns PASS/NEEDS_WORK
-│   │   └── aidlc-crawler.md         # Read-only codebase scanner (used by aidlc-discover)
-│   ├── references/                  # Knowledge guides loaded into context by skills as needed
-│   │   ├── common/                  # Cross-cutting guides (prerequisites, quality standards…)
-│   │   ├── requirements/            # Requirements engineering, product thinking
-│   │   ├── design/                  # Architecture patterns, DDD, functional design, UX
-│   │   ├── develop/                 # Code generation, testing guides
-│   │   ├── qa/                      # Quality and security review guides
-│   │   └── templates/               # Canonical templates for living docs and unit plans
-│   └── scripts/
-│       └── generate_evaluate.py     # The build loop — drives generator ⇄ evaluator, owns all exits
+└── framework/                       # Everything to copy into your project
+    ├── CLAUDE.md                    # Skill routing table + core principles
+    └── .claude/
+        ├── skills/                      # One subdirectory per skill — Claude loads on demand
+        │   ├── aidlc-init/SKILL.md
+        │   ├── aidlc-plan/SKILL.md
+        │   ├── aidlc-discover/SKILL.md
+        │   ├── aidlc-generate-evaluate/SKILL.md
+        │   ├── aidlc-feature/SKILL.md
+        │   └── aidlc-fix/SKILL.md
+        ├── agents/                      # Reusable agents called by skills
+        │   ├── aidlc-evaluator.md       # Reviews against spec, quality, security; returns PASS/NEEDS_WORK
+        │   └── aidlc-crawler.md         # Read-only codebase scanner (used by aidlc-discover)
+        ├── hooks/                       # Shell hooks wired into Claude Code lifecycle events
+        │   ├── subagent-start-log.sh    # Logs subagent start to .run-logs/subagent-debug.log
+        │   └── subagent-stop-log.sh     # Logs subagent stop + tool calls from its transcript
+        ├── references/                  # Knowledge guides loaded into context by skills as needed
+        │   ├── common/                  # Cross-cutting guides (prerequisites, quality standards…)
+        │   ├── requirements/            # Requirements engineering, product thinking
+        │   ├── design/                  # Architecture patterns, DDD, functional design, UX
+        │   ├── develop/                 # Code generation, testing guides
+        │   ├── qa/                      # Quality and security review guides
+        │   └── templates/               # Canonical templates for living docs and unit plans
+        └── settings.json                # Hook configuration
+```
+
+Once installed, `aidlc-init` creates these in your project:
+
+```text
+your-project/
 ├── docs/                            # Living docs (committed; populated by aidlc-init / aidlc-plan)
 │   ├── architecture.md
 │   ├── code-structure.md
@@ -89,25 +94,25 @@ Living docs are only ever updated through a skill, at a user-confirmed gate — 
     │   ├── spec.md
     │   ├── design.md
     │   ├── tasks.md
-    │   └── convo-{timestamp}.md     # Generator ⇄ evaluator transcript for this run
+    │   └── convo-{timestamp}.md     # Coordinator ⇄ evaluator transcript for this run
     ├── integration-{timestamp}.md   # Cross-unit integration record (written on every multi-unit merge)
     └── bugs.md
 ```
 
 ### Subagent strategy
 
-Skills are instructions Claude follows directly; they do not spawn subagents on their own. Subagents enter the picture in two places:
+Skills are instructions Claude follows directly. Subagents enter the picture in two places:
 
 **`aidlc-discover`** dispatches a fleet of read-only `aidlc-crawler` agents in parallel — one per assigned slice of the codebase. Each returns a structured report; the skill consolidates them into the living docs. Crawlers are intentionally narrow: read-only, scoped to their slice, no cross-agent coordination needed.
 
-**`aidlc-generate-evaluate`** runs the `generate_evaluate.py` build loop, which drives the generator and evaluator as separate Claude agents. The loop owns all control flow and all exit conditions — agents cannot end the loop themselves, which makes runaway builds impossible. Generator and evaluator never share a context window, so the evaluator's verdict is independent. When multiple units are built concurrently, each gets its own loop instance and its own git worktree; worktrees are merged and an integration record is written when they converge.
+**`aidlc-generate-evaluate`** makes the coordinator the builder. The coordinator spawns an `aidlc-evaluator` subagent each round for independent review — the evaluator never shares context with the coordinator, so its verdict is unbiased. The coordinator may also delegate to builder subagents when tasks are sufficiently decoupled, passing each subagent exactly the context it needs rather than relying on it to read living docs itself. When multiple units are built concurrently, each runs its own loop in its own git worktree; worktrees are merged and an integration record is written when they converge.
 
 ## Acknowledgements
 
 AIDLC-Lite stands on the shoulders of these projects. Full license texts are in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 
 - **[AWS AI-DLC (v2)](https://github.com/awslabs/aidlc-workflows/tree/v2)** — the core inspiration. Several of the reference guides under `.claude/references/` (requirements, product, DDD, testing, and other knowledge guides) are used directly or adapted from AWS's AI-DLC v2 knowledge base. Licensed MIT-0.
-- **[Planner-Generator-Evaluator](https://github.com/anthropics/cwc-long-running-agents)** and Anthropic's [*Building agents with the Claude Agent SDK / harness design for long-running agents*](https://www.anthropic.com/engineering/harness-design-long-running-apps) — the generator ⇄ evaluator harness and inversion-of-control loop design. Licensed Apache 2.0.
+- **[Planner-Generator-Evaluator](https://github.com/anthropics/cwc-long-running-agents)** and Anthropic's [*Building agents with the Claude Agent SDK / harness design for long-running agents*](https://www.anthropic.com/engineering/harness-design-long-running-apps) — the coordinator ⇄ evaluator loop design. Licensed Apache 2.0.
 
 AIDLC-Lite is a re-imagining, not a fork; any errors or simplifications are its own.
 
